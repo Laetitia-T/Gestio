@@ -4,11 +4,18 @@ dotenv.config();
 import express from "express";
 import cors from "cors";
 import { pool } from "./db/pool";
+import authRoutes from "./routes/auth";
+import userRoutes from "./routes/users";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Routes
+app.use("/auth", authRoutes);
+app.use("/users", userRoutes);
+
+// Healthcheck
 app.get("/health", async (_req, res) => {
   try {
     await pool.query("SELECT 1");
