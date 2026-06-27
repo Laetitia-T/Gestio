@@ -5,7 +5,7 @@ on:
     branches:
       - develop
       - "feat/**"
-  pull_request:
+  pull_request:git status
     branches:
       - develop
       - main
