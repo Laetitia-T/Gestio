@@ -16,6 +16,10 @@ FROM node:20-alpine AS production
 
 WORKDIR /app
 
+# Met à jour les packages système pour corriger les CVE Alpine
+RUN apk upgrade --no-cache
+
+
 # On ne copie que les dépendances de production
 COPY package*.json ./
 RUN npm ci --omit=dev
