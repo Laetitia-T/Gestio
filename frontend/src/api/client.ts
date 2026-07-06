@@ -4,7 +4,7 @@ const client = axios.create({
   baseURL: "http://localhost:4000",
 });
 
-// Ajoute automatiquement le token JWT à chaque requête
+// Ajoute automatiquement le token JWT a chaque requête
 client.interceptors.request.use((config) => {
   const token = localStorage.getItem("accessToken");
   if (token) {
