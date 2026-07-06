@@ -4,13 +4,10 @@ import { createTask, getTasks, updateTask, deleteTask } from "../controllers/tas
 
 const router = Router();
 
-router.use(authenticate); // toutes les routes tâches sont protégées
+router.use(authenticate);
 
-// Routes rattachées à une liste
-router.post("/lists/:id/tasks", createTask);
-router.get("/lists/:id/tasks", getTasks);
-
-// Routes sur une tâche directe
+router.post("/:id/tasks", createTask);
+router.get("/:id/tasks", getTasks);
 router.patch("/tasks/:id", updateTask);
 router.delete("/tasks/:id", deleteTask);
 
