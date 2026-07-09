@@ -8,6 +8,7 @@ import authRoutes from "./routes/auth";
 import userRoutes from "./routes/users";
 import listRoutes from "./routes/lists";
 import taskRoutes from "./routes/tasks";
+import taskDirectRoutes from "./routes/tasksDirect";
 
 const app = express();
 app.use(cors());

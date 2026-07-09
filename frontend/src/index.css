@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  --black: #000000;
+  --bg: #080008;
+  --panel: #0d000d;
+  --panel2: #120012;
+  --pink: #ff2ec4;
+  --pink-bright: #ff6be0;
+  --pink-dim: rgba(255, 46, 196, 0.15);
+  --pink-glow: rgba(255, 46, 196, 0.4);
+  --text: #ffe8f7;
+  --text-dim: #6b3060;
+  --line: rgba(255, 46, 196, 0.12);
+  --danger: #ff3b5c;
+  --amber: #ffb800;
+  --purple: #c084fc;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--black);
+  color: var(--text);
+  font-family: 'Share Tech Mono', monospace;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Scanlines */
+body::after {
+  content: "";
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent, transparent 2px,
+    rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+h1, h2, h3 { font-family: 'Press Start 2P', monospace; letter-spacing: .05em; line-height: 1.6; }
+
+input[type=text], input[type=email], input[type=password], input[type=date], textarea, select {
+  width: 100%;
+  background: var(--black);
+  border: 1px solid var(--line);
+  color: var(--text);
+  padding: 11px 12px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  outline: none;
+  transition: .15s;
+  caret-color: var(--pink);
+}
+input::placeholder, textarea::placeholder { color: var(--text-dim); }
+input:focus, textarea:focus, select:focus {
+  border-color: var(--pink);
+  box-shadow: 0 0 0 2px rgba(255,46,196,.12);
+}
+
+button { cursor: pointer; }
