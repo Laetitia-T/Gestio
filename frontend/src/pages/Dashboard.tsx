@@ -18,9 +18,7 @@ export default function Dashboard() {
   const [newListName, setNewListName] = useState("");
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    fetchLists();
-  }, []);
+  useEffect(() => { fetchLists(); }, []);
 
   const fetchLists = async () => {
     try {
@@ -57,47 +55,62 @@ export default function Dashboard() {
   };
 
   return (
-    <div style={styles.shell}>
+    <div style={s.shell}>
       {/* Sidebar */}
-      <div style={styles.sidebar}>
-        <div style={styles.brand}>★ Gestio</div>
-        <div style={{ ...styles.navlink, ...styles.navlinkOn }}>▸ Dashboard</div>
-        <div style={styles.userBlock}>
-          <div style={styles.avatar}>★</div>
+      <div style={s.sidebar}>
+        <div style={s.brand}>★ STARLOG</div>
+        <div style={{ ...s.navlink, ...s.navOn }}>▸ DASHBOARD</div>
+        <div style={s.navlink}>MES LISTES</div>
+        <div style={s.navlink}>ÉQUIPE</div>
+        <div style={s.userBlock}>
+          <div style={s.avatar}>★</div>
           <div style={{ flex: 1 }}>
-            <div style={styles.userName}>Mon compte</div>
-            <div style={styles.logout} onClick={() => { logout(); navigate("/login"); }}>
-              Déconnexion
+            <div style={s.userName}>MON COMPTE</div>
+            <div style={s.logout} onClick={() => { logout(); navigate("/login"); }}>
+              [ DÉCO ]
             </div>
           </div>
         </div>
       </div>
 
       {/* Main */}
-      <div style={styles.main}>
-        <div style={styles.mainHead}>
+      <div style={s.main}>
+        <div style={s.mainHead}>
           <div>
-            <div style={styles.eyebrow}>// Vue principale</div>
-            <h1>Mes listes de tâches</h1>
+            <div style={s.eyebrow}>// VUE PRINCIPALE</div>
+            <div style={s.pageTitle}>MES LISTES</div>
           </div>
-          <button style={styles.btn} onClick={() => setShowModal(true)}>+ Nouvelle liste</button>
+          <button style={s.btn} onClick={() => setShowModal(true)}>
+            [ + NOUVELLE LISTE ]
+          </button>
         </div>
 
-        {error && <div style={styles.error}>{error}</div>}
+        {/* Stats */}
+        <div style={s.statsRow}>
+          <div style={s.statChip}>
+            <span style={s.statVal}>{String(lists.length).padStart(2, "0")}</span>
+            <div style={s.statLabel}>LISTES</div>
+          </div>
+        </div>
+
+        {error && <div style={s.error}>{error}</div>}
 
         {loading ? (
-          <div style={styles.loading}>Chargement...</div>
+          <div style={s.dim}>CHARGEMENT...</div>
         ) : lists.length === 0 ? (
-          <div style={styles.empty}>Aucune liste pour le moment. Crée ta première liste !</div>
+          <div style={s.dim}>AUCUNE LISTE. CRÉE TA PREMIÈRE LISTE !</div>
         ) : (
-          <div style={styles.grid}>
+          <div style={s.grid}>
             {lists.map(list => (
-              <div key={list.id} style={styles.card} onClick={() => navigate(`/lists/${list.id}`)}>
-                <div style={styles.cardTag}>{list.role.toUpperCase()}</div>
-                <h3 style={{ margin: "8px 0 12px" }}>{list.name}</h3>
-                <div style={styles.cardMeta}>
-                  <span style={styles.cardDelete} onClick={e => handleDeleteList(list.id, e)}>
-                    Supprimer
+              <div key={list.id} style={s.card} onClick={() => navigate(`/lists/${list.id}`)}>
+                <div style={s.cardTag}>★ {list.role.toUpperCase()}</div>
+                <div style={s.cardTitle}>{list.name.toUpperCase()}</div>
+                <div style={s.cardMeta}>
+                  <span
+                    style={s.cardDelete}
+                    onClick={e => handleDeleteList(list.id, e)}
+                  >
+                    [ SUPPRIMER ]
                   </span>
                 </div>
               </div>
@@ -108,22 +121,20 @@ export default function Dashboard() {
 
       {/* Modal */}
       {showModal && (
-        <div style={styles.overlay} onClick={() => setShowModal(false)}>
-          <div style={styles.modal} onClick={e => e.stopPropagation()}>
-            <span style={styles.modalClose} onClick={() => setShowModal(false)}>✕ fermer</span>
-            <h2 style={{ marginBottom: 18 }}>Nouvelle liste</h2>
-            <label style={styles.label}>Titre de la liste</label>
+        <div style={s.overlay} onClick={() => setShowModal(false)}>
+          <div style={s.modal} onClick={e => e.stopPropagation()}>
+            <span style={s.modalClose} onClick={() => setShowModal(false)}>✕ FERMER</span>
+            <div style={s.modalTitle}>NOUVELLE LISTE</div>
+            <label style={s.label}>TITRE</label>
             <input
-              type="text"
-              placeholder="Ex : Sprint 05"
-              value={newListName}
-              onChange={e => setNewListName(e.target.value)}
+              type="text" placeholder="EX : SPRINT 05"
+              value={newListName} onChange={e => setNewListName(e.target.value)}
               onKeyDown={e => e.key === "Enter" && handleCreateList()}
               autoFocus
             />
-            <div style={styles.modalActions}>
-              <button style={styles.btn} onClick={handleCreateList}>Créer la liste</button>
-              <button style={styles.btnGhost} onClick={() => setShowModal(false)}>Annuler</button>
+            <div style={s.modalActions}>
+              <button style={s.btn} onClick={handleCreateList}>[ CRÉER ]</button>
+              <button style={s.btnGhost} onClick={() => setShowModal(false)}>[ ANNULER ]</button>
             </div>
           </div>
         </div>
@@ -132,96 +143,129 @@ export default function Dashboard() {
   );
 }
 
-const styles: Record<string, React.CSSProperties> = {
+const s: Record<string, React.CSSProperties> = {
   shell: { display: "flex", minHeight: "100vh", position: "relative", zIndex: 5 },
   sidebar: {
-    width: 230, flexShrink: 0, background: "var(--bg-panel)",
-    borderRight: "1px solid var(--line)", padding: "24px 16px",
+    width: 220, flexShrink: 0, background: "var(--panel)",
+    borderRight: "1px solid var(--line)", padding: "24px 14px",
     display: "flex", flexDirection: "column",
   },
   brand: {
-    fontSize: 20, marginBottom: 32,
-    background: "linear-gradient(135deg, var(--rose), var(--primary))",
-    WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-    fontFamily: "'Chakra Petch', sans-serif",
+    fontFamily: "'Press Start 2P', monospace", fontSize: 13,
+    color: "var(--pink)", marginBottom: 32, letterSpacing: ".1em",
+    textShadow: "0 0 10px var(--pink), 0 0 20px var(--pink-glow)",
   },
   navlink: {
-    fontFamily: "'JetBrains Mono', monospace", fontSize: 13,
+    fontFamily: "'Share Tech Mono', monospace", fontSize: 12,
     color: "var(--text-dim)", padding: "10px 10px",
-    borderLeft: "2px solid transparent", marginBottom: 2,
+    borderLeft: "2px solid transparent", marginBottom: 2, cursor: "pointer",
   },
-  navlinkOn: {
-    color: "var(--primary)", borderLeft: "2px solid var(--primary)",
-    background: "rgba(255,46,196,.06)",
+  navOn: {
+    color: "var(--pink)", borderLeft: "2px solid var(--pink)",
+    background: "rgba(255,46,196,.05)",
+    textShadow: "0 0 6px rgba(255,46,196,.4)",
   },
   userBlock: {
     marginTop: "auto", borderTop: "1px solid var(--line)",
     paddingTop: 16, display: "flex", alignItems: "center", gap: 10,
   },
   avatar: {
-    width: 34, height: 34, flexShrink: 0,
-    background: "linear-gradient(135deg, var(--crimson), var(--primary))",
+    width: 32, height: 32, flexShrink: 0,
+    background: "var(--black)", border: "1px solid var(--pink)",
     display: "flex", alignItems: "center", justifyContent: "center",
-    color: "#fff", fontFamily: "'Chakra Petch', sans-serif", fontSize: 16,
+    fontFamily: "'Press Start 2P', monospace", fontSize: 10, color: "var(--pink)",
+    boxShadow: "0 0 8px var(--pink-glow)",
   },
-  userName: { fontSize: 13, fontWeight: 600 },
-  logout: { fontSize: 11, color: "var(--text-dim)", fontFamily: "'JetBrains Mono'", cursor: "pointer" },
-  main: { flex: 1, padding: 32 },
+  userName: { fontSize: 11, letterSpacing: ".05em", fontFamily: "'Share Tech Mono', monospace" },
+  logout: { fontSize: 10, color: "var(--text-dim)", cursor: "pointer", marginTop: 2 },
+  main: { flex: 1, padding: "28px 32px" },
   mainHead: {
     display: "flex", justifyContent: "space-between",
-    alignItems: "center", marginBottom: 24, flexWrap: "wrap", gap: 12,
+    alignItems: "flex-start", marginBottom: 28, flexWrap: "wrap", gap: 12,
   },
   eyebrow: {
-    fontFamily: "'JetBrains Mono', monospace", fontSize: 11,
-    color: "var(--primary)", letterSpacing: ".15em",
-    textTransform: "uppercase", marginBottom: 4,
+    fontFamily: "'Share Tech Mono', monospace", fontSize: 10,
+    color: "var(--pink)", letterSpacing: ".2em",
+    textTransform: "uppercase", marginBottom: 8,
+    textShadow: "0 0 8px var(--pink-glow)",
   },
-  btn: {
-    background: "linear-gradient(135deg, var(--crimson), var(--primary))",
-    color: "#fff", border: "none", padding: "12px 20px",
-    fontFamily: "'Chakra Petch', sans-serif", fontWeight: 600,
-    fontSize: 14, letterSpacing: ".03em", textTransform: "uppercase", cursor: "pointer",
+  pageTitle: {
+    fontFamily: "'Press Start 2P', monospace", fontSize: 14,
+    color: "var(--pink)", textShadow: "0 0 10px var(--pink), 0 0 20px var(--pink-glow)",
+    lineHeight: 1.6,
   },
-  btnGhost: {
-    background: "transparent", color: "var(--text-primary)",
-    border: "1px solid var(--line)", padding: "12px 20px",
-    fontFamily: "'Chakra Petch', sans-serif", fontWeight: 600,
-    fontSize: 14, cursor: "pointer",
+  statsRow: { display: "flex", gap: 12, marginBottom: 28, flexWrap: "wrap" },
+  statChip: {
+    background: "var(--panel)", border: "1px solid var(--line)",
+    padding: "14px 18px", minWidth: 100,
   },
+  statVal: {
+    fontFamily: "'Press Start 2P', monospace", fontSize: 20,
+    color: "var(--pink)", textShadow: "0 0 10px var(--pink-glow)",
+    display: "block", marginBottom: 6,
+  },
+  statLabel: { fontSize: 9, color: "var(--text-dim)", letterSpacing: ".1em" },
   error: {
-    marginBottom: 16, padding: "10px 12px", fontSize: 13,
-    background: "rgba(255,59,92,.1)", border: "1px solid var(--danger)", color: "var(--danger)",
+    marginBottom: 16, padding: "10px 12px", fontSize: 11,
+    background: "rgba(255,59,92,.1)", border: "1px solid var(--danger)",
+    color: "var(--danger)", fontFamily: "'Share Tech Mono', monospace",
   },
-  loading: { color: "var(--text-dim)", fontFamily: "'JetBrains Mono', monospace" },
-  empty: { color: "var(--text-dim)", fontFamily: "'JetBrains Mono', monospace", fontSize: 13 },
-  grid: {
-    display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 18,
-  },
+  dim: { color: "var(--text-dim)", fontFamily: "'Share Tech Mono', monospace", fontSize: 12 },
+  grid: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 14 },
   card: {
-    background: "var(--bg-panel)", border: "1px solid var(--line)",
-    padding: 20, cursor: "pointer", transition: ".2s", position: "relative",
+    background: "var(--panel)", border: "1px solid var(--line)",
+    padding: 18, cursor: "pointer", transition: ".2s",
   },
   cardTag: {
-    fontFamily: "'JetBrains Mono'", fontSize: 10,
-    color: "var(--primary)", letterSpacing: ".1em",
+    fontSize: 9, color: "var(--pink)", letterSpacing: ".15em",
+    textTransform: "uppercase", marginBottom: 8,
+    textShadow: "0 0 6px var(--pink-glow)",
+    fontFamily: "'Share Tech Mono', monospace",
+  },
+  cardTitle: {
+    fontFamily: "'Share Tech Mono', monospace", fontSize: 14,
+    marginBottom: 14, letterSpacing: ".02em",
   },
   cardMeta: { display: "flex", justifyContent: "flex-end" },
-  cardDelete: { fontSize: 11, color: "var(--danger)", fontFamily: "'JetBrains Mono'", cursor: "pointer" },
+  cardDelete: {
+    fontSize: 10, color: "var(--danger)",
+    fontFamily: "'Share Tech Mono', monospace", cursor: "pointer",
+  },
+  btn: {
+    background: "var(--pink)", color: "var(--black)", border: "none",
+    padding: "12px 18px", fontFamily: "'Press Start 2P', monospace",
+    fontSize: 9, letterSpacing: ".05em", textTransform: "uppercase",
+    cursor: "pointer", boxShadow: "0 0 16px var(--pink-glow)",
+  },
+  btnGhost: {
+    background: "transparent", color: "var(--text)", border: "1px solid var(--line)",
+    padding: "12px 18px", fontFamily: "'Press Start 2P', monospace",
+    fontSize: 9, cursor: "pointer",
+  },
   overlay: {
-    position: "fixed", inset: 0, background: "rgba(10,0,8,.8)",
+    position: "fixed", inset: 0, background: "rgba(0,0,0,.9)",
     backdropFilter: "blur(4px)", zIndex: 50,
     display: "flex", alignItems: "center", justifyContent: "center",
   },
   modal: {
-    width: "100%", maxWidth: 420, background: "var(--bg-panel-2)",
-    border: "1px solid var(--primary)", padding: 28, position: "relative",
-    boxShadow: "0 0 60px rgba(255,46,196,.2)",
+    width: "100%", maxWidth: 400, background: "var(--panel2)",
+    border: "1px solid var(--pink)", padding: 28, position: "relative",
+    boxShadow: "0 0 60px rgba(255,46,196,.25)",
   },
-  modalClose: { position: "absolute", top: 14, right: 16, cursor: "pointer", color: "var(--text-dim)", fontFamily: "'JetBrains Mono'", fontSize: 14 },
+  modalClose: {
+    position: "absolute", top: 12, right: 14, cursor: "pointer",
+    color: "var(--text-dim)", fontSize: 11,
+    fontFamily: "'Share Tech Mono', monospace",
+  },
+  modalTitle: {
+    fontFamily: "'Press Start 2P', monospace", fontSize: 11,
+    color: "var(--pink)", marginBottom: 20, paddingLeft: 18,
+    textShadow: "0 0 8px var(--pink-glow)", lineHeight: 1.6,
+  },
   modalActions: { display: "flex", gap: 10, marginTop: 20 },
   label: {
-    display: "block", fontSize: 12, color: "var(--text-dim)",
-    fontFamily: "'JetBrains Mono', monospace", margin: "16px 0 6px",
-    textTransform: "uppercase", letterSpacing: ".05em",
+    display: "block", fontSize: 10, color: "var(--text-dim)",
+    fontFamily: "'Share Tech Mono', monospace",
+    margin: "16px 0 6px", textTransform: "uppercase", letterSpacing: ".1em",
   },
 };

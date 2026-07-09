@@ -27,83 +27,95 @@ export default function Login() {
   };
 
   return (
-    <div style={styles.wrap}>
-      <div style={styles.panel}>
-        <div style={styles.starDeco}>★</div>
-        <div style={styles.eyebrow}>// Authentification</div>
-        <h1 style={styles.title}>Connexion</h1>
+    <div style={s.wrap}>
+      <div style={s.panel}>
+        <div style={s.cornerTL} /><div style={s.cornerBR} />
+        {/* <div style={s.eyebrow}>// CONNEXION</div> */}
+        <div style={s.brand}>STARLOG</div>
+        <div style={s.sub}>TASK MANAGEMENT SYSTEM</div>
 
-        <label style={styles.label}>Email</label>
-        <input
-          type="email"
-          placeholder="agent@gestio.io"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-        />
+        <label style={s.label}>EMAIL</label>
+        <input type="email" placeholder="agent@starlog.io" value={email} onChange={e => setEmail(e.target.value)} />
 
-        <label style={styles.label}>Mot de passe</label>
-        <input
-          type="password"
-          placeholder="••••••••••"
-          value={password}
+        <label style={s.label}>MOT DE PASSE</label>
+        <input type="password" placeholder="••••••••••" value={password}
           onChange={e => setPassword(e.target.value)}
-          onKeyDown={e => e.key === "Enter" && handleSubmit()}
-        />
+          onKeyDown={e => e.key === "Enter" && handleSubmit()} />
 
-        {error && <div style={styles.error}>{error}</div>}
+        {error && <div style={s.error}>{error}</div>}
 
-        <button style={styles.btn} onClick={handleSubmit} disabled={loading}>
-          {loading ? "Connexion..." : "Se connecter →"}
+        <button style={s.btn} onClick={handleSubmit} disabled={loading}>
+          {loading ? "[ ... ]" : "[ SE CONNECTER ]"}
         </button>
 
-        <div style={styles.switchLink}>
-          Pas encore de compte ?{" "}
-          <Link to="/register" style={styles.link}>S'inscrire</Link>
+        <div style={s.switchLink}>
+          Pas de compte ? <Link to="/register" style={s.link}>S'INSCRIRE</Link>
         </div>
       </div>
     </div>
   );
 }
 
-const styles: Record<string, React.CSSProperties> = {
+const s: Record<string, React.CSSProperties> = {
   wrap: {
     minHeight: "100vh", display: "flex", alignItems: "center",
     justifyContent: "center", padding: "40px 20px", position: "relative", zIndex: 5,
   },
   panel: {
-    width: "100%", maxWidth: 400,
-    background: "var(--bg-panel)", border: "1px solid var(--line)",
+    width: "100%", maxWidth: 420,
+    background: "var(--panel)", border: "1px solid var(--line)",
     padding: 36, position: "relative",
-    boxShadow: "0 0 60px rgba(255,46,196,.08)",
+    boxShadow: "0 0 40px rgba(255,46,196,.06)",
   },
-  starDeco: {
-    position: "absolute", top: 10, right: 14, fontSize: 18,
-    opacity: .35, color: "var(--primary)",
+  cornerTL: {
+    position: "absolute", top: -2, left: -2, width: 12, height: 12,
+    background: "var(--pink)", borderRadius: 2,
+    boxShadow: "0 0 8px var(--pink), 0 0 16px var(--pink-glow)",
+    animation: "blink 2s ease-in-out infinite",
+  },
+  cornerBR: {
+    position: "absolute", bottom: -2, right: -2, width: 12, height: 12,
+    background: "var(--pink)", borderRadius: 2,
+    boxShadow: "0 0 8px var(--pink), 0 0 16px var(--pink-glow)",
   },
   eyebrow: {
-    fontFamily: "'JetBrains Mono', monospace", fontSize: 11,
-    color: "var(--primary)", letterSpacing: ".15em",
-    textTransform: "uppercase", marginBottom: 8,
+    fontFamily: "'Share Tech Mono', monospace", fontSize: 10,
+    color: "var(--pink)", letterSpacing: ".2em",
+    textTransform: "uppercase", marginBottom: 12,
+    textShadow: "0 0 8px var(--pink-glow)",
   },
-  title: { fontSize: 28, marginBottom: 24 },
+  brand: {
+    fontFamily: "'Press Start 2P', monospace", fontSize: 22,
+    color: "var(--pink)", marginBottom: 6, letterSpacing: ".1em",
+    textShadow: "0 0 10px var(--pink), 0 0 20px var(--pink-glow)",
+  },
+  sub: {
+    fontFamily: "'Press Start 2P', monospace", fontSize: 8,
+    color: "var(--text-dim)", letterSpacing: ".08em",
+    marginBottom: 28, lineHeight: 1.8,
+  },
   label: {
-    display: "block", fontSize: 12, color: "var(--text-dim)",
-    fontFamily: "'JetBrains Mono', monospace", margin: "16px 0 6px",
-    textTransform: "uppercase", letterSpacing: ".05em",
+    display: "block", fontSize: 10, color: "var(--text-dim)",
+    fontFamily: "'Share Tech Mono', monospace",
+    margin: "18px 0 6px", textTransform: "uppercase", letterSpacing: ".1em",
   },
   error: {
-    marginTop: 12, padding: "10px 12px", fontSize: 13,
+    marginTop: 12, padding: "10px 12px", fontSize: 11,
     background: "rgba(255,59,92,.1)", border: "1px solid var(--danger)",
-    color: "var(--danger)",
+    color: "var(--danger)", fontFamily: "'Share Tech Mono', monospace",
   },
   btn: {
-    width: "100%", marginTop: 22,
-    background: "linear-gradient(135deg, var(--crimson), var(--primary))",
-    color: "#fff", border: "none", padding: "12px 20px",
-    fontFamily: "'Chakra Petch', sans-serif", fontWeight: 600,
-    fontSize: 14, letterSpacing: ".03em", textTransform: "uppercase",
-    cursor: "pointer",
+    width: "100%", marginTop: 24,
+    background: "var(--pink)", color: "var(--black)",
+    border: "none", padding: "14px 20px",
+    fontFamily: "'Press Start 2P', monospace", fontWeight: 600,
+    fontSize: 10, letterSpacing: ".05em", textTransform: "uppercase",
+    cursor: "pointer", boxShadow: "0 0 16px var(--pink-glow)",
   },
-  switchLink: { marginTop: 18, fontSize: 13, color: "var(--text-dim)", textAlign: "center" },
-  link: { color: "var(--primary)", textDecoration: "none", fontWeight: 600 },
+  switchLink: {
+    marginTop: 18, fontSize: 10, color: "var(--text-dim)",
+    textAlign: "center", letterSpacing: ".05em",
+    fontFamily: "'Share Tech Mono', monospace",
+  },
+  link: { color: "var(--pink)", textDecoration: "none", textShadow: "0 0 6px var(--pink-glow)" },
 };
