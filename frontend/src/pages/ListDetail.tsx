@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getTasks, createTask, updateTask, deleteTask } from "../api/tasks";
+import StarRating from "../components/StarRating";
 
 interface Task {
   id: number;
@@ -25,7 +26,6 @@ export default function ListDetail() {
   const [filterPriority, setFilterPriority] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [editTask, setEditTask] = useState<Task | null>(null);
-
   const [form, setForm] = useState({
     title: "", description: "", priority: "medium", due_date: "",
   });
@@ -107,123 +107,130 @@ export default function ListDetail() {
     }
   };
 
-  const badgeStyle = (type: string): React.CSSProperties => {
-    const map: Record<string, React.CSSProperties> = {
-      todo: { color: "#c084fc", border: "1px solid #c084fc", background: "rgba(192,132,252,.08)" },
-      in_progress: { color: "var(--amber)", border: "1px solid var(--amber)", background: "rgba(255,184,0,.08)" },
-      done: { color: "var(--primary)", border: "1px solid var(--primary)", background: "rgba(255,46,196,.08)" },
-      low: { color: "#a78bfa", border: "1px solid #a78bfa", background: "rgba(167,139,250,.08)" },
-      medium: { color: "var(--amber)", border: "1px solid var(--amber)", background: "rgba(255,184,0,.08)" },
-      high: { color: "var(--rose)", border: "1px solid var(--rose)", background: "rgba(255,107,224,.12)" },
-    };
-    return { ...styles.badge, ...map[type] };
+  const statusLabel: Record<string, string> = {
+    todo: "TODO", in_progress: "IN PROGRESS", done: "DONE",
   };
 
-  const statusLabel: Record<string, string> = {
-    todo: "Todo", in_progress: "In progress", done: "Done",
+  const statusColors: Record<string, React.CSSProperties> = {
+    todo: { color: "var(--purple)", border: "1px solid var(--purple)", background: "rgba(192,132,252,.06)" },
+    in_progress: { color: "var(--amber)", border: "1px solid var(--amber)", background: "rgba(255,184,0,.06)" },
+    done: { color: "#3a2a3a", border: "1px solid #2a1a2a", background: "#050005" },
   };
 
   return (
-    <div style={styles.shell}>
-      <div style={styles.sidebar}>
-        <div style={styles.brand}>★ Gestio</div>
-        <div style={styles.navlink} onClick={() => navigate("/dashboard")}>‹ Dashboard</div>
-        <div style={{ ...styles.navlink, ...styles.navlinkOn }}>▸ Liste #{id}</div>
-        <div style={styles.userBlock}>
-          <div style={styles.avatar}>★</div>
+    <div style={s.shell}>
+      {/* Sidebar */}
+      <div style={s.sidebar}>
+        <div style={s.brand}>★ STARLOG</div>
+        <div style={s.navlink} onClick={() => navigate("/dashboard")}>‹ DASHBOARD</div>
+        <div style={{ ...s.navlink, ...s.navOn }}>▸ LISTE #{id}</div>
+        <div style={s.userBlock}>
+          <div style={s.avatar}>★</div>
           <div style={{ flex: 1 }}>
-            <div style={styles.userName}>Mon compte</div>
-            <div style={styles.logout} onClick={() => { logout(); navigate("/login"); }}>
-              Déconnexion
-            </div>
+            <div style={s.userName}>MON COMPTE</div>
+            <div style={s.logout} onClick={() => { logout(); navigate("/login"); }}>[ DÉCO ]</div>
           </div>
         </div>
       </div>
 
-      <div style={styles.main}>
-        <div style={styles.mainHead}>
+      {/* Main */}
+      <div style={s.main}>
+        <div style={s.mainHead}>
           <div>
-            <div style={styles.eyebrow}>// Liste #{id}</div>
-            <h1>Tâches</h1>
+            <div style={s.eyebrow}>// LISTE #{id}</div>
+            <div style={s.pageTitle}>TÂCHES</div>
           </div>
-          <button style={styles.btn} onClick={openCreate}>+ Nouvelle tâche</button>
+          <button style={s.btn} onClick={openCreate}>[ + NOUVELLE TÂCHE ]</button>
         </div>
 
-        <div style={styles.filters}>
-          <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} style={styles.select}>
-            <option value="">Statut : Tous</option>
-            <option value="todo">Todo</option>
-            <option value="in_progress">In progress</option>
-            <option value="done">Done</option>
+        {/* Filtres */}
+        <div style={s.filters}>
+          <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} style={s.select}>
+            <option value="">STATUT : TOUS</option>
+            <option value="todo">TODO</option>
+            <option value="in_progress">IN PROGRESS</option>
+            <option value="done">DONE</option>
           </select>
-          <select value={filterPriority} onChange={e => setFilterPriority(e.target.value)} style={styles.select}>
-            <option value="">Priorité : Toutes</option>
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
+          <select value={filterPriority} onChange={e => setFilterPriority(e.target.value)} style={s.select}>
+            <option value="">PRIORITÉ : TOUTES</option>
+            <option value="low">★☆☆ LOW</option>
+            <option value="medium">★★☆ MEDIUM</option>
+            <option value="high">★★★ HIGH</option>
           </select>
         </div>
 
-        {error && <div style={styles.error}>{error}</div>}
+        {error && <div style={s.error}>{error}</div>}
 
         {loading ? (
-          <div style={styles.loading}>Chargement...</div>
+          <div style={s.dim}>CHARGEMENT...</div>
         ) : tasks.length === 0 ? (
-          <div style={styles.empty}>Aucune tâche. Crée ta première tâche !</div>
+          <div style={s.dim}>AUCUNE TÂCHE. CRÉE TA PREMIÈRE TÂCHE !</div>
         ) : (
-          tasks.map(task => (
-            <div key={task.id} style={styles.taskRow}>
-              <span style={badgeStyle(task.status)}>{statusLabel[task.status]}</span>
-              <span style={styles.taskTitle}>{task.title}</span>
-              <span style={badgeStyle(task.priority)}>{task.priority}</span>
-              {task.due_date && (
-                <span style={styles.taskDue}>⏱ {new Date(task.due_date).toLocaleDateString("fr-FR")}</span>
-              )}
-              <div style={styles.taskActions}>
-                {task.status !== "done" && (
-                  <button style={styles.actionBtn} onClick={() => handleStatusChange(task, task.status === "todo" ? "in_progress" : "done")}>
-                    {task.status === "todo" ? "▶" : "✓"}
-                  </button>
+          tasks.map(task => {
+            const isDone = task.status === "done";
+            return (
+              <div key={task.id} style={{ ...s.taskRow, ...(isDone ? s.taskDone : {}) }}>
+                <span style={{ ...s.badge, ...statusColors[task.status] }}>
+                  {statusLabel[task.status]}
+                </span>
+                <span style={{ ...s.taskTitle, ...(isDone ? s.taskTitleDone : {}) }}>
+                  {task.title}
+                </span>
+                <StarRating priority={task.priority} dim={isDone} />
+                {task.due_date && (
+                  <span style={s.taskDue}>
+                    ⏱ {new Date(task.due_date).toLocaleDateString("fr-FR")}
+                  </span>
                 )}
-                <button style={styles.actionBtn} onClick={() => openEdit(task)}>✎</button>
-                <button style={{ ...styles.actionBtn, color: "var(--danger)" }} onClick={() => handleDelete(task.id)}>✕</button>
+                <div style={s.taskActions}>
+                  {!isDone && (
+                    <button style={s.actionBtn}
+                      onClick={() => handleStatusChange(task, task.status === "todo" ? "in_progress" : "done")}>
+                      {task.status === "todo" ? "▶" : "✓"}
+                    </button>
+                  )}
+                  <button style={s.actionBtn} onClick={() => openEdit(task)}>✎</button>
+                  <button style={{ ...s.actionBtn, color: "var(--danger)" }}
+                    onClick={() => handleDelete(task.id)}>✕</button>
+                </div>
               </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
 
+      {/* Modal */}
       {showModal && (
-        <div style={styles.overlay} onClick={() => setShowModal(false)}>
-          <div style={styles.modal} onClick={e => e.stopPropagation()}>
-            <span style={styles.modalClose} onClick={() => setShowModal(false)}>✕ fermer</span>
-            <h2 style={{ marginBottom: 18 }}>{editTask ? "Modifier la tâche" : "Nouvelle tâche"}</h2>
+        <div style={s.overlay} onClick={() => setShowModal(false)}>
+          <div style={s.modal} onClick={e => e.stopPropagation()}>
+            <span style={s.modalClose} onClick={() => setShowModal(false)}>✕ FERMER</span>
+            <div style={s.modalTitle}>{editTask ? "MODIFIER LA TÂCHE" : "NOUVELLE TÂCHE"}</div>
 
-            <label style={styles.label}>Titre</label>
-            <input type="text" placeholder="Ex : Ajouter le rate limiting"
+            <label style={s.label}>TITRE</label>
+            <input type="text" placeholder="EX : RATE LIMITING"
               value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} autoFocus />
 
-            <label style={styles.label}>Description</label>
-            <textarea placeholder="Détails..." value={form.description}
+            <label style={s.label}>DESCRIPTION</label>
+            <textarea placeholder="DÉTAILS..." value={form.description}
               onChange={e => setForm({ ...form, description: e.target.value })}
-              style={{ ...styles.textarea }} />
+              style={{ minHeight: 70, resize: "vertical" }} />
 
-            <label style={styles.label}>Priorité</label>
-            <select value={form.priority} onChange={e => setForm({ ...form, priority: e.target.value })} style={styles.select}>
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
+            <label style={s.label}>PRIORITÉ</label>
+            <select value={form.priority} onChange={e => setForm({ ...form, priority: e.target.value })}>
+              <option value="low">★☆☆ LOW</option>
+              <option value="medium">★★☆ MEDIUM</option>
+              <option value="high">★★★ HIGH</option>
             </select>
 
-            <label style={styles.label}>Date limite</label>
+            <label style={s.label}>DATE LIMITE</label>
             <input type="date" value={form.due_date}
               onChange={e => setForm({ ...form, due_date: e.target.value })} />
 
-            <div style={styles.modalActions}>
-              <button style={styles.btn} onClick={handleSubmit}>
-                {editTask ? "Sauvegarder" : "Créer la tâche"}
+            <div style={s.modalActions}>
+              <button style={s.btn} onClick={handleSubmit}>
+                {editTask ? "[ SAUVEGARDER ]" : "[ CRÉER ]"}
               </button>
-              <button style={styles.btnGhost} onClick={() => setShowModal(false)}>Annuler</button>
+              <button style={s.btnGhost} onClick={() => setShowModal(false)}>[ ANNULER ]</button>
             </div>
           </div>
         </div>
@@ -232,107 +239,123 @@ export default function ListDetail() {
   );
 }
 
-const styles: Record<string, React.CSSProperties> = {
+const s: Record<string, React.CSSProperties> = {
   shell: { display: "flex", minHeight: "100vh", position: "relative", zIndex: 5 },
   sidebar: {
-    width: 230, flexShrink: 0, background: "var(--bg-panel)",
-    borderRight: "1px solid var(--line)", padding: "24px 16px",
+    width: 220, flexShrink: 0, background: "var(--panel)",
+    borderRight: "1px solid var(--line)", padding: "24px 14px",
     display: "flex", flexDirection: "column",
   },
   brand: {
-    fontSize: 20, marginBottom: 32,
-    background: "linear-gradient(135deg, var(--rose), var(--primary))",
-    WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-    fontFamily: "'Chakra Petch', sans-serif",
+    fontFamily: "'Press Start 2P', monospace", fontSize: 13,
+    color: "var(--pink)", marginBottom: 32, letterSpacing: ".1em",
+    textShadow: "0 0 10px var(--pink), 0 0 20px var(--pink-glow)",
   },
   navlink: {
-    fontFamily: "'JetBrains Mono', monospace", fontSize: 13,
+    fontFamily: "'Share Tech Mono', monospace", fontSize: 12,
     color: "var(--text-dim)", padding: "10px 10px",
     borderLeft: "2px solid transparent", marginBottom: 2, cursor: "pointer",
   },
-  navlinkOn: {
-    color: "var(--primary)", borderLeft: "2px solid var(--primary)",
-    background: "rgba(255,46,196,.06)",
+  navOn: {
+    color: "var(--pink)", borderLeft: "2px solid var(--pink)",
+    background: "rgba(255,46,196,.05)",
   },
   userBlock: {
     marginTop: "auto", borderTop: "1px solid var(--line)",
     paddingTop: 16, display: "flex", alignItems: "center", gap: 10,
   },
   avatar: {
-    width: 34, height: 34, flexShrink: 0,
-    background: "linear-gradient(135deg, var(--crimson), var(--primary))",
+    width: 32, height: 32, flexShrink: 0,
+    background: "var(--black)", border: "1px solid var(--pink)",
     display: "flex", alignItems: "center", justifyContent: "center",
-    color: "#fff", fontFamily: "'Chakra Petch', sans-serif", fontSize: 16,
+    fontFamily: "'Press Start 2P', monospace", fontSize: 10, color: "var(--pink)",
+    boxShadow: "0 0 8px var(--pink-glow)",
   },
-  userName: { fontSize: 13, fontWeight: 600 },
-  logout: { fontSize: 11, color: "var(--text-dim)", fontFamily: "'JetBrains Mono'", cursor: "pointer" },
-  main: { flex: 1, padding: 32 },
+  userName: { fontSize: 11, letterSpacing: ".05em", fontFamily: "'Share Tech Mono', monospace" },
+  logout: { fontSize: 10, color: "var(--text-dim)", cursor: "pointer", marginTop: 2 },
+  main: { flex: 1, padding: "28px 32px" },
   mainHead: {
     display: "flex", justifyContent: "space-between",
-    alignItems: "center", marginBottom: 24, flexWrap: "wrap", gap: 12,
+    alignItems: "flex-start", marginBottom: 28, flexWrap: "wrap", gap: 12,
   },
   eyebrow: {
-    fontFamily: "'JetBrains Mono', monospace", fontSize: 11,
-    color: "var(--primary)", letterSpacing: ".15em",
-    textTransform: "uppercase", marginBottom: 4,
+    fontFamily: "'Share Tech Mono', monospace", fontSize: 10,
+    color: "var(--pink)", letterSpacing: ".2em",
+    textTransform: "uppercase", marginBottom: 8,
+    textShadow: "0 0 8px var(--pink-glow)",
+  },
+  pageTitle: {
+    fontFamily: "'Press Start 2P', monospace", fontSize: 14,
+    color: "var(--pink)", textShadow: "0 0 10px var(--pink), 0 0 20px var(--pink-glow)",
+    lineHeight: 1.6,
   },
   filters: { display: "flex", gap: 10, marginBottom: 20, flexWrap: "wrap" },
   select: {
-    background: "var(--bg-panel)", color: "var(--text-primary)",
-    border: "1px solid var(--line)", padding: "9px 12px",
-    fontFamily: "'JetBrains Mono', monospace", fontSize: 12, outline: "none",
-  },
-  btn: {
-    background: "linear-gradient(135deg, var(--crimson), var(--primary))",
-    color: "#fff", border: "none", padding: "12px 20px",
-    fontFamily: "'Chakra Petch', sans-serif", fontWeight: 600,
-    fontSize: 14, letterSpacing: ".03em", textTransform: "uppercase", cursor: "pointer",
-  },
-  btnGhost: {
-    background: "transparent", color: "var(--text-primary)",
-    border: "1px solid var(--line)", padding: "12px 20px",
-    fontFamily: "'Chakra Petch', sans-serif", fontWeight: 600,
-    fontSize: 14, cursor: "pointer",
+    background: "var(--panel)", color: "var(--text)", border: "1px solid var(--line)",
+    padding: "9px 12px", fontFamily: "'Share Tech Mono', monospace", fontSize: 11, outline: "none",
   },
   error: {
-    marginBottom: 16, padding: "10px 12px", fontSize: 13,
-    background: "rgba(255,59,92,.1)", border: "1px solid var(--danger)", color: "var(--danger)",
+    marginBottom: 16, padding: "10px 12px", fontSize: 11,
+    background: "rgba(255,59,92,.1)", border: "1px solid var(--danger)",
+    color: "var(--danger)", fontFamily: "'Share Tech Mono', monospace",
   },
-  loading: { color: "var(--text-dim)", fontFamily: "'JetBrains Mono', monospace" },
-  empty: { color: "var(--text-dim)", fontFamily: "'JetBrains Mono', monospace", fontSize: 13 },
+  dim: { color: "var(--text-dim)", fontFamily: "'Share Tech Mono', monospace", fontSize: 12 },
   taskRow: {
-    display: "flex", alignItems: "center", gap: 14,
-    background: "var(--bg-panel)", border: "1px solid var(--line)",
-    padding: "14px 16px", marginBottom: 10, flexWrap: "wrap",
+    display: "flex", alignItems: "center", gap: 12,
+    background: "var(--panel)", border: "1px solid var(--line)",
+    padding: "14px 16px", marginBottom: 8, flexWrap: "wrap", transition: ".2s",
   },
-  taskTitle: { flex: 1, fontSize: 14, fontWeight: 500 },
-  taskDue: { fontFamily: "'JetBrains Mono'", fontSize: 11, color: "var(--text-dim)" },
-  taskActions: { display: "flex", gap: 6 },
+  taskDone: {
+    background: "#050005", borderColor: "rgba(255,46,196,0.04)",
+    opacity: 0.45, filter: "grayscale(0.6)",
+  },
+  taskTitle: { flex: 1, fontSize: 13, letterSpacing: ".02em" },
+  taskTitleDone: { textDecoration: "line-through", color: "var(--text-dim)" },
+  taskDue: { fontFamily: "'Share Tech Mono', monospace", fontSize: 10, color: "var(--text-dim)" },
+  taskActions: { display: "flex", gap: 4 },
   actionBtn: {
     background: "transparent", border: "1px solid var(--line)",
     color: "var(--text-dim)", padding: "4px 8px", cursor: "pointer",
-    fontFamily: "'JetBrains Mono'", fontSize: 12, transition: ".15s",
+    fontFamily: "'Share Tech Mono', monospace", fontSize: 11, transition: ".15s",
   },
   badge: {
-    fontFamily: "'JetBrains Mono', monospace", fontSize: 10, fontWeight: 700,
-    padding: "4px 9px", textTransform: "uppercase", letterSpacing: ".06em", whiteSpace: "nowrap",
+    fontFamily: "'Share Tech Mono', monospace", fontSize: 9, fontWeight: 700,
+    padding: "4px 8px", textTransform: "uppercase", letterSpacing: ".1em", whiteSpace: "nowrap",
+  },
+  btn: {
+    background: "var(--pink)", color: "var(--black)", border: "none",
+    padding: "12px 18px", fontFamily: "'Press Start 2P', monospace",
+    fontSize: 9, letterSpacing: ".05em", textTransform: "uppercase",
+    cursor: "pointer", boxShadow: "0 0 16px var(--pink-glow)",
+  },
+  btnGhost: {
+    background: "transparent", color: "var(--text)", border: "1px solid var(--line)",
+    padding: "12px 18px", fontFamily: "'Press Start 2P', monospace",
+    fontSize: 9, cursor: "pointer",
   },
   overlay: {
-    position: "fixed", inset: 0, background: "rgba(10,0,8,.8)",
+    position: "fixed", inset: 0, background: "rgba(0,0,0,.9)",
     backdropFilter: "blur(4px)", zIndex: 50,
     display: "flex", alignItems: "center", justifyContent: "center",
   },
   modal: {
-    width: "100%", maxWidth: 420, background: "var(--bg-panel-2)",
-    border: "1px solid var(--primary)", padding: 28, position: "relative",
-    boxShadow: "0 0 60px rgba(255,46,196,.2)",
+    width: "100%", maxWidth: 400, background: "var(--panel2)",
+    border: "1px solid var(--pink)", padding: 28, position: "relative",
+    boxShadow: "0 0 60px rgba(255,46,196,.25)",
   },
-  modalClose: { position: "absolute", top: 14, right: 16, cursor: "pointer", color: "var(--text-dim)", fontFamily: "'JetBrains Mono'", fontSize: 14 },
+  modalClose: {
+    position: "absolute", top: 12, right: 14, cursor: "pointer",
+    color: "var(--text-dim)", fontSize: 11, fontFamily: "'Share Tech Mono', monospace",
+  },
+  modalTitle: {
+    fontFamily: "'Press Start 2P', monospace", fontSize: 11,
+    color: "var(--pink)", marginBottom: 20, paddingLeft: 18,
+    textShadow: "0 0 8px var(--pink-glow)", lineHeight: 1.6,
+  },
   modalActions: { display: "flex", gap: 10, marginTop: 20 },
   label: {
-    display: "block", fontSize: 12, color: "var(--text-dim)",
-    fontFamily: "'JetBrains Mono', monospace", margin: "16px 0 6px",
-    textTransform: "uppercase", letterSpacing: ".05em",
+    display: "block", fontSize: 10, color: "var(--text-dim)",
+    fontFamily: "'Share Tech Mono', monospace",
+    margin: "16px 0 6px", textTransform: "uppercase", letterSpacing: ".1em",
   },
-  textarea: { minHeight: 70, resize: "vertical" as const },
 };
