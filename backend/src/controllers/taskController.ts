@@ -2,6 +2,7 @@ import { Response } from "express";
 import { pool } from "../db/pool";
 import { AuthRequest } from "../middlewares/authenticate";
 import { TaskStatus, TaskPriority } from "../types/index";
+import { io } from "../server";
 
 // Vérifie que l'utilisateur est membre de la liste
 async function assertListMember(listId: string, userId: number): Promise<boolean> {
@@ -44,7 +45,7 @@ export const createTask = async (req: AuthRequest, res: Response): Promise<void>
         userId,
       ]
     );
-
+    io.to(`list:${listId}`).emit("task:created", result.rows[0]);
     res.status(201).json({ task: result.rows[0] });
   } catch (err) {
     console.error("Erreur createTask:", err);
@@ -151,6 +152,7 @@ export const updateTask = async (req: AuthRequest, res: Response): Promise<void>
       ]
     );
 
+    io.to(`list:${result.rows[0].list_id}`).emit("task:updated", result.rows[0]);
     res.json({ task: result.rows[0] });
   } catch (err) {
     console.error("Erreur updateTask:", err);
@@ -165,23 +167,24 @@ export const deleteTask = async (req: AuthRequest, res: Response): Promise<void>
 
   try {
     // Seul le créateur ou l'owner de la liste peut supprimer
-    const result = await pool.query(
-      `SELECT t.id FROM tasks t
-       INNER JOIN list_members lm ON t.list_id = lm.list_id
-       WHERE t.id = $1 AND lm.user_id = $2
-         AND (t.created_by = $2 OR lm.role = 'owner')`,
+    const taskToDelete = await pool.query(
+      `SELECT t.id, t.list_id FROM tasks t
+      INNER JOIN list_members lm ON t.list_id = lm.list_id
+      WHERE t.id = $1 AND lm.user_id = $2
+        AND (t.created_by = $2 OR lm.role = 'owner')`,
       [id, userId]
     );
 
-    if (result.rows.length === 0) {
+    if (taskToDelete.rows.length === 0) {
       res.status(403).json({ error: "Tâche introuvable ou accès refusé." });
       return;
     }
 
     await pool.query("DELETE FROM tasks WHERE id = $1", [id]);
+    io.to(`list:${taskToDelete.rows[0].list_id}`).emit("task:deleted", { id: Number(id) });
     res.json({ message: "Tâche supprimée." });
-  } catch (err) {
-    console.error("Erreur deleteTask:", err);
-    res.status(500).json({ error: "Erreur interne du serveur." });
-  }
+    } catch (err) {
+      console.error("Erreur deleteTask:", err);
+      res.status(500).json({ error: "Erreur interne du serveur." });
+    }
 };
