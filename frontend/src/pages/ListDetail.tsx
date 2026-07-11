@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getTasks, createTask, updateTask, deleteTask } from "../api/tasks";
 import StarRating from "../components/StarRating";
+import socket from "../socket/client";
 
 interface Task {
   id: number;
@@ -30,21 +31,53 @@ export default function ListDetail() {
     title: "", description: "", priority: "medium", due_date: "",
   });
 
-  useEffect(() => { fetchTasks(); }, [filterStatus, filterPriority]);
-
   const fetchTasks = async () => {
-    try {
-      const res = await getTasks(Number(id), {
-        status: filterStatus || undefined,
-        priority: filterPriority || undefined,
-      });
-      setTasks(res.data.tasks);
-    } catch {
-      setError("Impossible de charger les tâches.");
-    } finally {
-      setLoading(false);
-    }
+  try {
+    const res = await getTasks(Number(id), {
+      status: filterStatus || undefined,
+      priority: filterPriority || undefined,
+    });
+    setTasks(res.data.tasks);
+  } catch {
+    setError("Impossible de charger les tâches.");
+  } finally {
+    setLoading(false);
+  }
+};
+
+// Connexion Socket.io + chargement initial
+useEffect(() => {
+  socket.auth = { token: localStorage.getItem("accessToken") };
+  socket.connect();
+  socket.emit("join_list", Number(id));
+
+  socket.on("task:created", (task) => {
+    setTasks(prev => [task, ...prev]);
+  });
+
+  socket.on("task:updated", (updated) => {
+    setTasks(prev => prev.map(t => t.id === updated.id ? updated : t));
+  });
+
+  socket.on("task:deleted", ({ id: deletedId }: { id: number }) => {
+    setTasks(prev => prev.filter(t => t.id !== deletedId));
+  });
+
+  fetchTasks();
+
+  return () => {
+    socket.emit("leave_list", Number(id));
+    socket.off("task:created");
+    socket.off("task:updated");
+    socket.off("task:deleted");
+    socket.disconnect();
   };
+}, [id]);
+
+// Recharge quand les filtres changent
+useEffect(() => {
+  fetchTasks();
+}, [filterStatus, filterPriority]);
 
   const openCreate = () => {
     setEditTask(null);
